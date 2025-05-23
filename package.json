@@ -1,0 +1,20 @@
+{
+  "name": "lecture_bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.8",
+    "@whiskeysockets/baileys": "^6.7.17",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
