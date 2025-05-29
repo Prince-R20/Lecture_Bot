@@ -53,8 +53,14 @@ export default async function handleRecieveMsg(msg) {
     inviteCodeSender = "";
   } else if (waitingRequestApproval && text.toLowerCase() === "no") {
     await sendTextMsg(
-      inviteCodeSender,
+      "2347083119673@s.whatsapp.net",
       "You have declined the request to join the group."
+    );
+
+    await sendTextMsg(
+      inviteCodeSender,
+      `Your request to add *Lecture Bot* to your group was declined.\n
+      Contact Admin (07083119673)`
     );
     waitingRequestApproval = false;
     inviteCode = "";
