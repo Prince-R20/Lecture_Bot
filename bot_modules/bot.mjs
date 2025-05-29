@@ -6,6 +6,7 @@ import {
 import handleConnection from "./connection/handleConnection.mjs";
 import syncAuth from "./connection/handleSyncAuthRemote.mjs";
 import handleRecieveMsg from "./dm/handleRecieveMsg.mjs";
+import { setSock } from "./sockInstance.mjs";
 
 export default async function startBot() {
   await syncAuth.downloadAuth();
@@ -15,6 +16,8 @@ export default async function startBot() {
     auth: state,
     printQRInTerminal: true,
   });
+
+  setSock(sock);
 
   let isConnected = false;
   let credsUpdated = false;
@@ -38,6 +41,6 @@ export default async function startBot() {
   });
 
   sock.ev.on("messages.upsert", async (msg) => {
-    handleRecieveMsg(sock, msg);
+    handleRecieveMsg(msg);
   });
 }

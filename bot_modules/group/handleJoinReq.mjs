@@ -1,7 +1,9 @@
 import handleSendMsg from "../dm/handleSendMsg.mjs";
+import { getSock } from "../sockInstance.mjs";
 const { sendTextMsg } = handleSendMsg;
 
-export default async function reqJoinGroup(sock, inviteCode, sender) {
+export default async function reqJoinGroup(inviteCode, sender) {
+  const sock = getSock();
   const botAdmin = "2347083119673@s.whatsapp.net";
 
   const { id, owner, subject, desc, size } = await sock.groupGetInviteInfo(
@@ -9,7 +11,6 @@ export default async function reqJoinGroup(sock, inviteCode, sender) {
   );
 
   await sendTextMsg(
-    sock,
     sender,
     `I am resricted to join groups without my admin's permission.\n
     Please wait while I make a request to my to join your group .....\n
@@ -18,7 +19,6 @@ export default async function reqJoinGroup(sock, inviteCode, sender) {
   );
 
   await sendTextMsg(
-    sock,
     botAdmin,
     `Hey Dev Prince, \n*REQUEST FOR PERMISSION TO JOIN A NEW GROUP*\n
     The group info is as follows; \nGroup Id: ${id} \nGroup Name: ${subject}
