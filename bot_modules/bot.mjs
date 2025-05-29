@@ -5,6 +5,7 @@ import {
 } from "@whiskeysockets/baileys";
 import handleConnection from "./connection/handleConnection.mjs";
 import syncAuth from "./connection/handleSyncAuthRemote.mjs";
+import handleRecieveMsg from "./dm/handleRecieveMsg.mjs";
 
 export default async function startBot() {
   await syncAuth.downloadAuth();
@@ -34,5 +35,9 @@ export default async function startBot() {
         syncAuth.uploadAuth();
       }
     }
+  });
+
+  sock.ev.on("messages.upsert", async (msg) => {
+    handleRecieveMsg(sock, msg);
   });
 }
