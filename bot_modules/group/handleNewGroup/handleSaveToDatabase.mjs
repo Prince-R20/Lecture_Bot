@@ -1,8 +1,8 @@
 import {
   createAdminData,
   createGroupData,
-} from "../database/createNewGroupData.mjs";
-import { getSock } from "../sockInstance.mjs";
+} from "../../database/createNewGroupData.mjs";
+import { getSock } from "../../sockInstance.mjs";
 
 export async function saveGroupData(groupJid, botAdmin) {
   const sock = getSock();

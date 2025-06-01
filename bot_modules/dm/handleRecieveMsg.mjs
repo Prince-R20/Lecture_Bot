@@ -1,5 +1,5 @@
-import reqJoinGroup from "../group/handleJoinReq.mjs";
-import joinGroup from "../group/handleJoinGroup.mjs";
+import reqJoinGroup from "../group/handleNewGroup/handleJoinReq.mjs";
+import joinGroup from "../group/handleNewGroup/handleJoinGroup.mjs";
 import handleSendMsg from "./handleSendMsg.mjs";
 import { getSock } from "../sockInstance.mjs";
 const { sendTextMsg, sendMediaMsg } = handleSendMsg;

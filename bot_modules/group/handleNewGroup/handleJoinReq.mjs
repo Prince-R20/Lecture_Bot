@@ -1,5 +1,5 @@
-import handleSendMsg from "../dm/handleSendMsg.mjs";
-import { getSock } from "../sockInstance.mjs";
+import handleSendMsg from "../../dm/handleSendMsg.mjs";
+import { getSock } from "../../sockInstance.mjs";
 const { sendTextMsg } = handleSendMsg;
 
 export default async function reqJoinGroup(inviteCode, sender) {
