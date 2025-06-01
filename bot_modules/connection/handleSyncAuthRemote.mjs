@@ -7,50 +7,58 @@ const credsDir = path.resolve("auth");
 const credsPath = path.join(credsDir, "creds.json");
 
 async function uploadAuth() {
-  const bufferFile = await readFile(credsPath);
+  try {
+    const bufferFile = await readFile(credsPath);
 
-  const { error } = await supabase.storage
-    .from("devauth")
-    .upload("creds", bufferFile, {
-      contentType: "application/json",
-      upsert: true,
-    });
+    const { error } = await supabase.storage
+      .from("devauth")
+      .upload("creds", bufferFile, {
+        contentType: "application/json",
+        upsert: true,
+      });
 
-  if (error) {
-    console.error("❌ Upload Auth error:", error);
-    return;
+    if (error) {
+      console.error("❌ Upload Auth error:", error);
+      return;
+    }
+
+    console.log("✅ Auth uploaded successfully!");
+  } catch (err) {
+    console.log("❌Failed to upload auth", err);
   }
-
-  console.log("✅ Auth uploaded successfully!");
 }
 
 async function downloadAuth() {
-  const { data, error } = await supabase.storage
-    .from("devauth")
-    .download("creds");
+  try {
+    const { data, error } = await supabase.storage
+      .from("devauth")
+      .download("creds");
 
-  if (error) {
-    console.error("❌ Download Auth error:", error);
-    return;
-  }
-
-  const arrayBuffer = await data.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-
-  mkdir(credsDir, { recursive: true }, (dirErr) => {
-    if (dirErr) {
-      console.error("❌ Error creating Auth directory:", dirErr);
+    if (error) {
+      console.error("❌ Download Auth error:", error);
       return;
     }
-    writeFile(credsPath, buffer, (err) => {
-      if (err) {
-        console.error("❌ Error writing Auth file:", err);
+
+    const arrayBuffer = await data.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    mkdir(credsDir, { recursive: true }, (dirErr) => {
+      if (dirErr) {
+        console.error("❌ Error creating Auth directory:", dirErr);
         return;
-      } else {
-        console.log("✅ Auth file written successfully!");
       }
+      writeFile(credsPath, buffer, (err) => {
+        if (err) {
+          console.error("❌ Error writing Auth file:", err);
+          return;
+        } else {
+          console.log("✅ Auth file written successfully!");
+        }
+      });
     });
-  });
+  } catch (err) {
+    console.log("❌ Failed to download auth", err);
+  }
 }
 
 export default { uploadAuth, downloadAuth };
