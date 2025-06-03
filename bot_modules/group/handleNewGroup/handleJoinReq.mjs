@@ -2,6 +2,7 @@ import handleSendMsg from "../../dm/handleSendMsg.mjs";
 import { getSock } from "../../sockInstance.mjs";
 import joinGroup from "./handleJoinGroup.mjs";
 import { waitForReply } from "../../handleWaitForReply.mjs";
+import supabase from "../../supabase/supabase.mjs";
 const { sendTextMsg } = handleSendMsg;
 
 export default async function reqJoinGroup(inviteCode, sender) {
@@ -12,6 +13,19 @@ export default async function reqJoinGroup(inviteCode, sender) {
   const { id, owner, subject, desc, size } = await sock.groupGetInviteInfo(
     inviteCode
   );
+
+  //checking if bot already in group
+  const inGroup = await isBotinGroup(sock, id);
+
+  if (inGroup) {
+    await sendTextMsg(
+      sender,
+      `_🤖 Lecture Bot is already active in this group!_ \n
+      No need to add me again — I'm all set and ready to help. ✅📚`
+    );
+
+    return;
+  }
 
   await sendTextMsg(
     sender,
@@ -53,4 +67,31 @@ export default async function reqJoinGroup(inviteCode, sender) {
       );
     }
   });
+  
+}
+
+async function isBotinGroup(sock, group_jid) {
+  try {
+    const { data } = await supabase
+      .from("groups")
+      .select("*")
+      .eq("group_jid", group_jid)
+      .single();
+
+    if (data) {
+      console.log(`✅ Group ${group_jid} already exists and is active in db. \n
+        checking if the bot is in whatsapp group`);
+
+      const metadata = await sock.groupMetadata(group_jid);
+
+      return true;
+    }
+  } catch (error) {
+    console.log(
+      "Error checking if bot is in database or not active in group",
+      error
+    );
+
+    return false;
+  }
 }
