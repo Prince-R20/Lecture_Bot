@@ -1,29 +1,40 @@
 import { getSock } from "./sockInstance.mjs";
 
-export default async function waitForReply(jid) {
+const pendingReplies = new Map();
+
+export function waitForReply(jid, callback, timeout = 60000) {
   const sock = getSock();
+  // If already waiting for this JID, reject the previous one
+  if (pendingReplies.has(jid)) {
+    pendingReplies
+      .get(jid)
+      .reject(new Error("Another wait is already pending for this user."));
+  }
 
-  return new Promise((resolve, reject) => {
-    const onMessage = (msg) => {
-      const message = msg.messages?.[0];
-      if (
-        message &&
-        message.key &&
-        message.key.remoteJid === jid &&
-        !message.key.fromMe &&
-        message.message?.conversation
-      ) {
-        sock.ev.off("messages.upsert", onMessage); // Stop listening
-        resolve(message.message.conversation);
-      }
-    };
+  let resolved = false;
+  const timer = setTimeout(() => {
+    sock.ev.off("messages.upsert", onMessage);
+    pendingReplies.delete(jid);
+    if (!resolved) callback(new Error("Timeout: No reply received."), null);
+  }, timeout);
 
-    sock.ev.on("messages.upsert", onMessage);
-
-    // Timeout in case user doesn't reply
-    const timer = setTimeout(() => {
+  function onMessage(msg) {
+    const message = msg.messages?.[0];
+    if (
+      message &&
+      message.key &&
+      message.key.remoteJid === jid &&
+      !message.key.fromMe &&
+      message.message?.conversation
+    ) {
+      clearTimeout(timer);
       sock.ev.off("messages.upsert", onMessage);
-      reject(new Error("Timeout: No reply received."));
-    }, 60000);
-  });
+      pendingReplies.delete(jid);
+      resolved = true;
+      callback(null, message.message.conversation);
+    }
+  }
+
+  pendingReplies.set(jid, { callback });
+  sock.ev.on("messages.upsert", onMessage);
 }

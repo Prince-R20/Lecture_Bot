@@ -17,11 +17,5 @@ export default async function joinGroup(inviteCode, inviteCodeSender) {
     "*Lecture Bot has successfully joined the group*"
   );
 
-  await sendTextMsg(
-    inviteCodeSender,
-    `*Lecture Bot has successfully joined your group.* \n
-    Please wait while I prepare you a guide to get the best of my services.`
-  );
-
   saveGroupData(response, inviteCodeSender);
 }
