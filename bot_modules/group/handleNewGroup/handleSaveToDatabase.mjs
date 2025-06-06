@@ -3,6 +3,7 @@ import {
   createGroupData,
 } from "../../database/createNewGroupData.mjs";
 import { getSock } from "../../sockInstance.mjs";
+import createNewGroupFolder from "../../storage/createNewGroupFolder.mjs";
 
 export async function saveGroupData(groupJid, botAdmin) {
   const sock = getSock();
@@ -11,6 +12,10 @@ export async function saveGroupData(groupJid, botAdmin) {
     const { id, subject, desc, owner, size } = await sock.groupMetadata(
       groupJid
     );
+
+    const { folderId } = await createNewGroupFolder(subject, id);
+    console.log(folderId);
+
     const groupData = [
       {
         group_jid: id,
@@ -18,6 +23,7 @@ export async function saveGroupData(groupJid, botAdmin) {
         subject: desc,
         owner_jid: owner,
         participants_count: size,
+        folder_id: folderId,
       },
     ];
 

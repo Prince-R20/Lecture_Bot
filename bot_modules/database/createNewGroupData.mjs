@@ -1,4 +1,4 @@
-import supabase from "../supabase/supabase.mjs";
+import supabase from "../client/supabase.mjs";
 
 //create a new group record
 export async function createGroupData(groupData) {

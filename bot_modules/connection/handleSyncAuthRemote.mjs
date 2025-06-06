@@ -1,4 +1,4 @@
-import supabase from "../supabase/supabase.mjs";
+import supabase from "../client/supabase.mjs";
 import path from "node:path";
 import { readFile } from "node:fs/promises";
 import { writeFile, mkdir } from "node:fs";

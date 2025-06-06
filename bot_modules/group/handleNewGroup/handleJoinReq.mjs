@@ -2,7 +2,7 @@ import handleSendMsg from "../../dm/handleSendMsg.mjs";
 import { getSock } from "../../sockInstance.mjs";
 import joinGroup from "./handleJoinGroup.mjs";
 import { waitForReply } from "../../handleWaitForReply.mjs";
-import supabase from "../../supabase/supabase.mjs";
+import supabase from "../../client/supabase.mjs";
 const { sendTextMsg } = handleSendMsg;
 
 export default async function reqJoinGroup(inviteCode, sender) {
@@ -14,7 +14,7 @@ export default async function reqJoinGroup(inviteCode, sender) {
     inviteCode
   );
 
-  //checking if bot already in group
+  // checking if bot already in group
   const inGroup = await isBotinGroup(sock, id);
 
   if (inGroup) {
@@ -55,11 +55,6 @@ export default async function reqJoinGroup(inviteCode, sender) {
 
     if (decision.toLowerCase() === "yes") {
       await joinGroup(inviteCode, sender);
-
-      await sendTextMsg(
-        sender,
-        "Your request to add *Lecture Bot* to your group was approved!"
-      );
     } else {
       await sendTextMsg(
         sender,
@@ -67,7 +62,6 @@ export default async function reqJoinGroup(inviteCode, sender) {
       );
     }
   });
-  
 }
 
 async function isBotinGroup(sock, group_jid) {
