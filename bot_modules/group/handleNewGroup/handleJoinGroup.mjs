@@ -1,5 +1,5 @@
 import handleSendMsg from "../../dm/handleSendMsg.mjs";
-import { getSock } from "../../sockInstance.mjs";
+import { getSock } from "../../utils/sockInstance.mjs";
 import { saveGroupData } from "./handleSaveToDatabase.mjs";
 
 const { sendTextMsg } = handleSendMsg;

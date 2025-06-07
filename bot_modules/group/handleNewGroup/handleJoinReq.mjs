@@ -1,7 +1,7 @@
 import handleSendMsg from "../../dm/handleSendMsg.mjs";
-import { getSock } from "../../sockInstance.mjs";
+import { getSock } from "../../utils/sockInstance.mjs";
 import joinGroup from "./handleJoinGroup.mjs";
-import { waitForReply } from "../../handleWaitForReply.mjs";
+import { waitForReply } from "../../utils/handleWaitForReply.mjs";
 import supabase from "../../client/supabase.mjs";
 const { sendTextMsg } = handleSendMsg;
 

@@ -2,7 +2,7 @@ import {
   createAdminData,
   createGroupData,
 } from "../../database/createNewGroupData.mjs";
-import { getSock } from "../../sockInstance.mjs";
+import { getSock } from "../../utils/sockInstance.mjs";
 import createNewGroupFolder from "../../storage/createNewGroupFolder.mjs";
 
 export async function saveGroupData(groupJid, botAdmin) {
