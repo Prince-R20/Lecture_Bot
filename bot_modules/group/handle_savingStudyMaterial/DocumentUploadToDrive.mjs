@@ -88,6 +88,12 @@ export default async function uploadDocumentToDrive(media, message, sender) {
           sender,
           `✅ Your study material *${driveRes.name}* was successfully uploaded and saved to the drive!`
         );
+
+        // Notify the group about the new material
+        await sendTextMsg(
+          groupJid, // The group's JID
+          groupMaterialAnnouncement(driveRes)
+        );
       } else {
         await sendTextMsg(
           sender,
@@ -170,4 +176,24 @@ function parseFileMetaData(reply = "") {
   const [course_code, course_title, description, part, semester, level] = lines;
 
   return { course_code, course_title, description, part, semester, level };
+}
+
+function groupMaterialAnnouncement(file) {
+  return `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 *New Study Material Available!* \n
+
+🎉 *${
+    file.properties?.course_title || file.name
+  }* has just been uploaded for this group! \n
+
+🆔 *Course Code:* ${file.properties?.course_code || "N/A"}\n
+📝 *Title:* ${file.properties?.course_title || "N/A"}\n
+🧾 *Description:* ${file.description || "No description provided."}\n
+🔗 *Ask the bot for this material by course code or title!*\n\n
+
+✨ _Thanks to our admin for supporting your learning journey!_\n
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  `.trim();
 }
