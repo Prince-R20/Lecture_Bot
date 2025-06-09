@@ -14,10 +14,10 @@ export default async function handleRecieveMsg(msg) {
     message.message.extendedTextMessage?.text ||
     "";
   const media =
-    message.message.DocumentMessage ||
-    message.message.ImageMessage ||
-    message.message.VideoMessage ||
-    (message.message.AudioMessage && !message.message.AudioMessage?.ptt);
+    message.message.documentMessage ||
+    message.message.imageMessage ||
+    message.message.videoMessage ||
+    (message.message.audioMessage && !message.message.audioMessage?.ptt);
 
   console.log(`📨 ${sender}: ${text}`);
 
@@ -42,7 +42,11 @@ export default async function handleRecieveMsg(msg) {
   }
 
   //if message sent is a media (a study material)
-  if (media) {
+  if (
+    typeof sender === "string" &&
+    sender.endsWith("@s.whatsapp.net") &&
+    media
+  ) {
     uploadDocumentToDrive(media, message, sender);
   }
 }

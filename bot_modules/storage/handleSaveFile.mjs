@@ -1,4 +1,5 @@
 import getDriveClient from "../client/drive.mjs";
+import { Readable } from "stream";
 
 /**
  * Save a file to Google Drive in the structure: group_folder/level/semester/file
@@ -14,7 +15,7 @@ import getDriveClient from "../client/drive.mjs";
  * @param {string} semester
  */
 
-export default async function saveFileToDrive(
+export default async function saveFileToDrive({
   group_folder_id,
   fileBuffer,
   fileName,
@@ -24,8 +25,8 @@ export default async function saveFileToDrive(
   description = "",
   part = "",
   level = "",
-  semester = ""
-) {
+  semester = "",
+}) {
   try {
     const drive = await getDriveClient();
 
@@ -33,14 +34,14 @@ export default async function saveFileToDrive(
     const levelFolderId = await ensureFolderExist({
       drive,
       parentId: group_folder_id,
-      name: level,
+      name: `${level} level`,
     });
 
     //ensure semester file exist inside level folder
     const semesterFolderId = await ensureFolderExist({
       drive,
       parentId: levelFolderId,
-      name: semester,
+      name: `${semester} semester`,
     });
 
     //file meta data and custom properties for efficient search
@@ -59,7 +60,7 @@ export default async function saveFileToDrive(
 
     const media = {
       mimeType,
-      body: Buffer.from(fileBuffer),
+      body: Readable.from(fileBuffer),
     };
 
     const res = await drive.files.create({

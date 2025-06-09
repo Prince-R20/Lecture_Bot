@@ -1,7 +1,7 @@
 import handleSendMsg from "../../dm/handleSendMsg.mjs";
 import { getSock } from "../../utils/sockInstance.mjs";
 import joinGroup from "./handleJoinGroup.mjs";
-import { waitForReply } from "../../utils/handleWaitForReply.mjs";
+import { waitForAdminReply } from "../../utils/handleWaitForReply.mjs";
 import supabase from "../../client/supabase.mjs";
 const { sendTextMsg } = handleSendMsg;
 
@@ -44,7 +44,7 @@ export default async function reqJoinGroup(inviteCode, sender) {
     Reply with "yes ${requestId}" to approve or "no ${requestId}" to decline.`
   );
 
-  waitForReply(botAdmin, requestId, async (error, decision) => {
+  waitForAdminReply(botAdmin, requestId, async (error, decision) => {
     if (error) {
       await sendTextMsg(
         sender,
