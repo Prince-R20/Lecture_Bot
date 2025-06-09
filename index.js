@@ -1,6 +1,6 @@
-import "./bot_modules/httpServer.mjs";
+import "./bot_modules/utils/httpServer.mjs";
 import "dotenv/config";
 
-import startBot from "./bot_modules/bot.mjs";
+import startBot from "./bot_modules/utils/bot.mjs";
 
 startBot();

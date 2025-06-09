@@ -1,5 +1,5 @@
 import qrcode from "qrcode-terminal";
-import startBot from "../bot.mjs";
+import startBot from "../utils/bot.mjs";
 import syncAuth from "./handleSyncAuthRemote.mjs";
 
 export default function handleConnection(update, DisconnectReason) {

@@ -1,15 +1,11 @@
 import reqJoinGroup from "../group/handleNewGroup/handleJoinReq.mjs";
 import handleSendMsg from "./handleSendMsg.mjs";
-import { getSock } from "../sockInstance.mjs";
+import uploadDocumentToDrive from "../group/handle_savingStudyMaterial/DocumentUploadToDrive.mjs";
 const { sendTextMsg, sendMediaMsg } = handleSendMsg;
 
-//Join new group variables
-const botAdmin = "2347083119673@s.whatsapp.net";
-
 export default async function handleRecieveMsg(msg) {
-  const sock = getSock();
-
   const message = msg.messages[0];
+
   if (!message.message || message.key.fromMe) return;
 
   const sender = message.key.remoteJid;
@@ -17,6 +13,11 @@ export default async function handleRecieveMsg(msg) {
     message.message.conversation ||
     message.message.extendedTextMessage?.text ||
     "";
+  const media =
+    message.message.documentMessage ||
+    message.message.imageMessage ||
+    message.message.videoMessage ||
+    (message.message.audioMessage && !message.message.audioMessage?.ptt);
 
   console.log(`📨 ${sender}: ${text}`);
 
@@ -38,5 +39,14 @@ export default async function handleRecieveMsg(msg) {
     const inviteCode = text.slice(text.lastIndexOf("/") + 1);
 
     await reqJoinGroup(inviteCode, sender);
+  }
+
+  //if message sent is a media (a study material)
+  if (
+    typeof sender === "string" &&
+    sender.endsWith("@s.whatsapp.net") &&
+    media
+  ) {
+    uploadDocumentToDrive(media, message, sender);
   }
 }
