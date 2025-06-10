@@ -1,23 +1,20 @@
-import supabase from "../../client/supabase.mjs";
 import { downloadMediaMessage } from "@whiskeysockets/baileys";
 import crypto from "node:crypto";
 import { waitForUserReply } from "../../utils/handleWaitForReply.mjs";
 import handleSendMsg from "../../dm/handleSendMsg.mjs";
 import saveFileToDrive from "../../storage/handleSaveFile.mjs";
+import getFileInfo from "./processFileMetaData.mjs";
+import verify_sender_group from "./verify_sender_group.mjs";
 
 const { sendTextMsg } = handleSendMsg;
 
 const tempUpload = new Map();
 
 export default async function uploadDocumentToDrive(media, message, sender) {
-  const botGroupAdmin = await verifySenderIsAdmin(sender);
-  if (botGroupAdmin == false) {
-    await sendTextMsg(sender, "You are not authorized to send me any media.");
-    return;
-  }
+  const verified = await verify_sender_group(sender);
 
-  const group = await verifyGroupActive(botGroupAdmin.group_jid);
-  if (group == false) return;
+  const botGroupAdmin = verified[0];
+  const group = verified[1];
 
   const buffer = await downloadMediaMessage(message, "buffer");
   const { mimetype, fileName } = media;
@@ -55,7 +52,7 @@ export default async function uploadDocumentToDrive(media, message, sender) {
 `
   );
 
-  waitForUserReply(sender, async (error, reply) => {
+  waitForUserReply(sender, async function handleReply(error, reply) {
     if (error) {
       await sendTextMsg(
         sender,
@@ -64,7 +61,8 @@ export default async function uploadDocumentToDrive(media, message, sender) {
       return;
     }
 
-    const fileInfo = parseFileMetaData(reply);
+    const fileInfo = await getFileInfo(reply, handleReply);
+
     const pending = tempUpload.get(sender);
 
     const metaData = {
@@ -78,6 +76,9 @@ export default async function uploadDocumentToDrive(media, message, sender) {
       part: fileInfo.part,
       level: fileInfo.level,
       semester: fileInfo.semester,
+      file_hash: fileHash,
+      group_jid: botGroupAdmin.group_jid,
+      bot_admin_jid: sender,
     };
 
     try {
@@ -91,7 +92,7 @@ export default async function uploadDocumentToDrive(media, message, sender) {
 
         // Notify the group about the new material
         await sendTextMsg(
-          groupJid, // The group's JID
+          botGroupAdmin.group_jid, // The group's JID
           groupMaterialAnnouncement(driveRes)
         );
       } else {
@@ -111,71 +112,8 @@ export default async function uploadDocumentToDrive(media, message, sender) {
   });
 }
 
-async function verifySenderIsAdmin(senderJid) {
-  try {
-    const { data, error } = await supabase
-      .from("admins")
-      .select("admin_id, admin_jid, group_jid")
-      .eq("admin_jid", senderJid)
-      .single();
-
-    if (error) {
-      console.error("Error fetching data:", error);
-      return false;
-    } else if (!data) {
-      await sendTextMsg(
-        senderJid,
-        "You are not authorize to send me any media."
-      );
-      return false;
-    } else {
-      return data;
-    }
-  } catch (err) {
-    console.error("Error verifying sender is admin:", err);
-    throw err;
-  }
-}
-
-async function verifyGroupActive(group_jid) {
-  try {
-    const { data, error } = await supabase
-      .from("groups")
-      .select("is_active, folder_id")
-      .eq("group_jid", group_jid)
-      .single();
-
-    if (error) {
-      console.error("Error fetching data:", error);
-    } else if (!data) {
-      return false;
-    } else {
-      return data;
-    }
-  } catch (error) {
-    console.error("Error verifying group is active:", err);
-  }
-}
-
 function getFileHash(buffer) {
   return crypto.createHash("sha256").update(buffer).digest("hex");
-}
-
-function parseFileMetaData(reply = "") {
-  const lines = reply
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0);
-
-  if (lines.length < 6) {
-    throw new Error(
-      "Incomplete details. Please provide all 6 requires fields."
-    );
-  }
-
-  const [course_code, course_title, description, part, semester, level] = lines;
-
-  return { course_code, course_title, description, part, semester, level };
 }
 
 function groupMaterialAnnouncement(file) {

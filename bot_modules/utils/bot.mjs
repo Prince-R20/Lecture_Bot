@@ -41,6 +41,10 @@ export default async function startBot() {
   });
 
   sock.ev.on("messages.upsert", async (msg) => {
-    handleRecieveMsg(msg);
+    try {
+      await handleRecieveMsg(msg);
+    } catch (err) {
+      console.error("Error in handleRecieveMsg:", err);
+    }
   });
 }

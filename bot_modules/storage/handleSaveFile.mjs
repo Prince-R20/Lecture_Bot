@@ -1,5 +1,6 @@
 import getDriveClient from "../client/drive.mjs";
 import { Readable } from "stream";
+import { createFileData } from "../database/createFileData.mjs";
 
 /**
  * Save a file to Google Drive in the structure: group_folder/level/semester/file
@@ -26,6 +27,9 @@ export default async function saveFileToDrive({
   part = "",
   level = "",
   semester = "",
+  file_hash,
+  group_jid,
+  bot_admin_jid,
 }) {
   try {
     const drive = await getDriveClient();
@@ -69,6 +73,22 @@ export default async function saveFileToDrive({
       fields: "id, name, parents, properties, description",
     });
 
+    const fileData = [
+      {
+        file_hash,
+        file_id: res.data.id,
+        file_name: fileName,
+        group_jid,
+        level,
+        semester,
+        course_code,
+        course_title,
+        description,
+        part: part || "",
+        upload_by: bot_admin_jid,
+      },
+    ];
+    await createFileData(fileData);
     return {
       id: res.data.id,
       name: res.data.name,

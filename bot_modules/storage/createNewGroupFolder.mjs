@@ -29,11 +29,12 @@ export default async function createNewGroupFolder(groupName, group_jid) {
     });
 
     return {
-      FolderId: res.data.id,
+      folderId: res.data.id,
       name: res.data.name,
       alreadyExist: false,
     };
   } catch (error) {
     console.error("❌ Error creating group folder:", error.message);
+    throw error;
   }
 }

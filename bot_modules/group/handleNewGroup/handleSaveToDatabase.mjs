@@ -14,7 +14,6 @@ export async function saveGroupData(groupJid, botAdmin) {
     );
 
     const { folderId } = await createNewGroupFolder(subject, id);
-    console.log(folderId);
 
     const groupData = [
       {
