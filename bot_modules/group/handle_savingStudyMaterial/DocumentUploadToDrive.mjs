@@ -5,6 +5,7 @@ import handleSendMsg from "../../dm/handleSendMsg.mjs";
 import saveFileToDrive from "../../storage/handleSaveFile.mjs";
 import getFileInfo from "./processFileMetaData.mjs";
 import verify_sender_group from "./verify_sender_group.mjs";
+import checkFileExists from "./checkFileExist.mjs";
 
 const { sendTextMsg } = handleSendMsg;
 
@@ -19,6 +20,17 @@ export default async function uploadDocumentToDrive(media, message, sender) {
   const buffer = await downloadMediaMessage(message, "buffer");
   const { mimetype, fileName } = media;
   const fileHash = getFileHash(buffer);
+
+  const fileExists = await checkFileExists(fileHash);
+
+  if (fileExists) {
+    await sendTextMsg(
+      sender,
+      "❗ This file has already been uploaded and saved. Duplicate uploads are not allowed."
+    );
+
+    return;
+  }
 
   tempUpload.set(sender, {
     buffer,
