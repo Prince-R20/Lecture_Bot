@@ -86,6 +86,8 @@ export default async function saveFileToDrive({
         description,
         part: part || "",
         upload_by: bot_admin_jid,
+        mimetype: mimeType,
+        material_type: "pdf"
       },
     ];
     await createFileData(fileData);

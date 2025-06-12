@@ -13,7 +13,7 @@ export default function processMaterialRequest(message) {
   }
 
   // Extract action keyword (notes, material, pdf, pq, past questions, etc.)
-  const actionKeywordRegex = /\b(notes?|materials?|pdfs?|pq|past questions?)\b/;
+  const actionKeywordRegex = /\b(notes?|materials?|pdfs?|pq|past questions?)\b/i;
   const actionMatch = text.match(actionKeywordRegex);
   const actionKeyword = actionMatch ? actionMatch[0] : "pdf";
 

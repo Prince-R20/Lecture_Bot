@@ -1,6 +1,7 @@
 import handleSendMsg from "../../dm/handleSendMsg.mjs";
 import { getSock } from "../../utils/sockInstance.mjs";
 import { saveGroupData } from "./handleSaveToDatabase.mjs";
+import getOtherGroupInfo from "./handleOtherGroupInfo.mjs";
 
 const { sendTextMsg } = handleSendMsg;
 
@@ -17,7 +18,11 @@ export default async function joinGroup(inviteCode, inviteCodeSender) {
     "*Lecture Bot has successfully joined the group*"
   );
 
-  await saveGroupData(response, inviteCodeSender);
+  const { current_level, current_semester } = await getOtherGroupInfo(
+    inviteCodeSender
+  );
+
+  await saveGroupData(response, inviteCodeSender, current_level, current_semester);
 
   await sendTextMsg(
     inviteCodeSender,
