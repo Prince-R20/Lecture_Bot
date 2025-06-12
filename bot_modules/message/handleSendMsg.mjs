@@ -1,9 +1,10 @@
 import { getSock } from "../utils/sockInstance.mjs";
 
-async function sendTextMsg(sender, text) {
+async function sendTextMsg(sender, text, mentions = []) {
   const sock = getSock();
   await sock.sendMessage(sender, {
     text,
+    mentions,
   });
 }
 

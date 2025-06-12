@@ -1,4 +1,7 @@
 import { waitForUserReply } from "../../utils/handleWaitForReply.mjs";
+import handleSendMsg from "../../message/handleSendMsg.mjs";
+
+const { sendTextMsg } = handleSendMsg;
 
 export default async function getOtherGroupInfo(inviteCodeSender) {
   // Level: must be 100, 200, 300, etc.

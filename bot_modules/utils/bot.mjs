@@ -5,7 +5,7 @@ import {
 } from "@whiskeysockets/baileys";
 import handleConnection from "../connection/handleConnection.mjs";
 import syncAuth from "../connection/handleSyncAuthRemote.mjs";
-import handleRecieveMsg from "../dm/handleRecieveMsg.mjs";
+import handleRecieveMsg from "../message/handleRecieveMsg.mjs";
 import { setSock } from "./sockInstance.mjs";
 
 export default async function startBot() {

@@ -1,4 +1,4 @@
-import handleSendMsg from "../../dm/handleSendMsg.mjs";
+import handleSendMsg from "../../message/handleSendMsg.mjs";
 import { getSock } from "../../utils/sockInstance.mjs";
 import joinGroup from "./handleJoinGroup.mjs";
 import { waitForAdminReply } from "../../utils/handleWaitForReply.mjs";

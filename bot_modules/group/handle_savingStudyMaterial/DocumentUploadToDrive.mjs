@@ -1,7 +1,7 @@
 import { downloadMediaMessage } from "@whiskeysockets/baileys";
 import crypto from "node:crypto";
 import { waitForUserReply } from "../../utils/handleWaitForReply.mjs";
-import handleSendMsg from "../../dm/handleSendMsg.mjs";
+import handleSendMsg from "../../message/handleSendMsg.mjs";
 import saveFileToDrive from "../../storage/handleSaveFile.mjs";
 import getFileInfo from "./processFileMetaData.mjs";
 import verify_sender_group from "./verify_sender_group.mjs";
