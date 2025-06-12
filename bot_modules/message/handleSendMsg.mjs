@@ -7,6 +7,9 @@ async function sendTextMsg(sender, text) {
   });
 }
 
-function sendMediaMsg() {}
+async function sendMediaMsg(group_jid, message) {
+  const sock = getSock();
+  await sock.sendMessage(group_jid, message);
+}
 
 export default { sendTextMsg, sendMediaMsg };
