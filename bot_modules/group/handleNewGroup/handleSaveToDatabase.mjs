@@ -5,7 +5,12 @@ import {
 import { getSock } from "../../utils/sockInstance.mjs";
 import createNewGroupFolder from "../../storage/createNewGroupFolder.mjs";
 
-export async function saveGroupData(groupJid, botAdmin) {
+export async function saveGroupData(
+  groupJid,
+  botAdmin,
+  current_level,
+  current_semester
+) {
   const sock = getSock();
 
   try {
@@ -23,6 +28,8 @@ export async function saveGroupData(groupJid, botAdmin) {
         owner_jid: owner,
         participants_count: size,
         folder_id: folderId,
+        current_level,
+        current_semester,
       },
     ];
 

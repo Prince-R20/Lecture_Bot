@@ -1,7 +1,7 @@
 import { downloadMediaMessage } from "@whiskeysockets/baileys";
 import crypto from "node:crypto";
 import { waitForUserReply } from "../../utils/handleWaitForReply.mjs";
-import handleSendMsg from "../../dm/handleSendMsg.mjs";
+import handleSendMsg from "../../message/handleSendMsg.mjs";
 import saveFileToDrive from "../../storage/handleSaveFile.mjs";
 import getFileInfo from "./processFileMetaData.mjs";
 import verify_sender_group from "./verify_sender_group.mjs";
@@ -52,6 +52,8 @@ export default async function uploadDocumentToDrive(media, message, sender) {
     \n4. 🔢 *Part:* _(Optional, if not applicable, type "-")_
     \n5. 🗓️ *Semester:* _(e.g.,First or Second)_
     \n6. 🎓 *Level:* _(e.g., 100, 200, etc,)_
+    \n7. 🎓 *What type of material is this?*\n
+    1 - Lecture Note\n2 - Past Question (PQ)_
     \n
     *🎨 Example*
     Sta213
@@ -60,6 +62,7 @@ export default async function uploadDocumentToDrive(media, message, sender) {
     One
     First
     200
+    1
     \n*Waiting for your response...📝*
 `
   );
@@ -77,6 +80,8 @@ export default async function uploadDocumentToDrive(media, message, sender) {
 
     const pending = tempUpload.get(sender);
 
+    console.log(pending.mimetype);
+
     const metaData = {
       group_folder_id: pending.group_folder_id,
       fileBuffer: pending.buffer,
@@ -91,6 +96,7 @@ export default async function uploadDocumentToDrive(media, message, sender) {
       file_hash: fileHash,
       group_jid: botGroupAdmin.group_jid,
       bot_admin_jid: sender,
+      material_type: fileInfo.material_type,
     };
 
     try {

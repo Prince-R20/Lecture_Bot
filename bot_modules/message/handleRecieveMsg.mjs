@@ -1,6 +1,7 @@
 import reqJoinGroup from "../group/handleNewGroup/handleJoinReq.mjs";
 import handleSendMsg from "./handleSendMsg.mjs";
 import uploadDocumentToDrive from "../group/handle_savingStudyMaterial/DocumentUploadToDrive.mjs";
+import deliverDocumentToGroup from "../group/handle_deliveringStudyMaterial/deliverDocumentToGroup.mjs";
 const { sendTextMsg, sendMediaMsg } = handleSendMsg;
 
 export default async function handleRecieveMsg(msg) {
@@ -48,5 +49,11 @@ export default async function handleRecieveMsg(msg) {
     media
   ) {
     uploadDocumentToDrive(media, message, sender);
+  }
+
+  //if message is from a group (possibly a request from a participant)
+  if (sender.endsWith("@g.us") && !media) {
+    const participant = message.key.participant;
+    deliverDocumentToGroup(sender, participant, text);
   }
 }

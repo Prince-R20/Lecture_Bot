@@ -23,13 +23,31 @@ function parseFileMetaData(reply = "") {
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
 
-  if (lines.length < 6) {
+  if (lines.length < 7) {
     throw new Error(
       "Incomplete details. Please provide all 6 requires fields."
     );
   }
 
-  const [course_code, course_title, description, part, semester, level] = lines;
+  const [
+    course_code,
+    course_title,
+    description,
+    part,
+    semester,
+    level,
+    material_type_no,
+  ] = lines;
 
-  return { course_code, course_title, description, part, semester, level };
+  const material_type = (material_type_no === "2") ? "pq" : "lecture_note";
+
+  return {
+    course_code,
+    course_title,
+    description,
+    part,
+    semester,
+    level,
+    material_type,
+  };
 }
