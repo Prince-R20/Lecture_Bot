@@ -19,8 +19,8 @@ I'm *Lecture Bot* 🤖, here to help you access and share study materials with e
 \n- *bot send STA213 notes*
 \n- *bot send Design and Analysis of Experiments pdf*
 \n- *bot send 100 level first semester materials*
-\n- *bot send past questions for MTH211*
-\n- *bot send 200 level second semester pq*
+\n- *bot send MTH211 past questions*
+\n- *bot send 200 level second semester STA222 pq*
 
 \n\nYou can use:
 \nYou can use:

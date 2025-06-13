@@ -20,7 +20,8 @@ export default async function saveFileToDrive({
   group_folder_id,
   fileBuffer,
   fileName,
-  mimeType,
+  mimetype,
+  material_type = "Lecture Note",
   course_code = "",
   course_title = "",
   description = "",
@@ -59,11 +60,12 @@ export default async function saveFileToDrive({
         part,
         level,
         semester,
+        material_type,
       },
     };
 
     const media = {
-      mimeType,
+      mimetype,
       body: Readable.from(fileBuffer),
     };
 
@@ -86,8 +88,8 @@ export default async function saveFileToDrive({
         description,
         part: part || "",
         upload_by: bot_admin_jid,
-        mimetype: mimeType,
-        material_type: "pdf"
+        mimetype,
+        material_type,
       },
     ];
     await createFileData(fileData);

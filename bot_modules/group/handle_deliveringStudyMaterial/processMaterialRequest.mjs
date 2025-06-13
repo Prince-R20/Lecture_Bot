@@ -1,10 +1,17 @@
+/**
+ * Extracts command trigger, action keyword (material type), and material identifiers from user message.
+ * Returns: { commandTrigger, actionKeyword, materialIdentifier }
+ */
+
 export default function processMaterialRequest(message) {
   const text = message.trim().toLowerCase();
+  let remainingText;
 
-  // Accepts: "@bot send", "bot drop", "bot please send", etc.
-  const commandTriggerRegex = /^(@?bot)\s*(please\s*)?(send|drop)\b/;
-  const commandTrigger = text.match(commandTriggerRegex);
-  if (!commandTrigger) {
+  //Extract command keywords: "@bot send", "bot drop", "bot please send", etc.
+  const commandRegex = /^(@?bot)\s*(please\s*)?(send|drop)\b/i;
+  const commandMatch = commandRegex.test(text);
+
+  if (!commandMatch) {
     return {
       commandTrigger: false,
       actionKeyword: null,
@@ -12,12 +19,31 @@ export default function processMaterialRequest(message) {
     };
   }
 
-  // Extract action keyword (notes, material, pdf, pq, past questions, etc.)
-  const actionKeywordRegex = /\b(notes?|materials?|pdfs?|pq|past questions?)\b/i;
-  const actionMatch = text.match(actionKeywordRegex);
-  const actionKeyword = actionMatch ? actionMatch[0] : "pdf";
+  remainingText = text.replace(commandRegex, "").trim();
 
-  const materialIdentifier = extractMaterialIdentifiers(text);
+  // Extract action keyword (notes, material, pdf, pq, past questions, etc.)
+  const actionRegex = /\b(notes?|materials?|pdfs?|pq|past questions?)\b/i;
+  const actionMatch = remainingText.match(actionRegex);
+
+  let actionKeyword;
+  if (actionMatch) {
+    const keyword = actionMatch[0].toLowerCase();
+    switch (keyword) {
+      case "pq" || "past question" || "past questions":
+        actionKeyword = "pq";
+        break;
+      default:
+        actionKeyword = "lecture_note";
+        break;
+    }
+  } else {
+    actionKeyword = "lecture_note";
+  }
+
+  remainingText = remainingText.replace(actionRegex, "");
+
+  // Extract material identifiers (order-independent)
+  const materialIdentifier = extractMaterialIdentifiers(remainingText);
 
   return {
     commandTrigger: true,
@@ -51,8 +77,6 @@ function extractMaterialIdentifiers(text) {
   // Remove bot prefix and action keywords
   let course_title;
   const cleaned = text
-    .replace(/^(@?bot)\s*(please\s*)?(send|drop)\b/i, "")
-    .replace(/\b(notes?|materials?|pdfs?|pq|past questions?)\b/i, "")
     .replace(/\b([a-z]{3})\s?\d{3}\b/i, "")
     .replace(/\b(\d{3})\s?(level|l)\b/i, "")
     .replace(/\b((first|1st|second|2nd|third|3rd))\s*semester\b/i, "")

@@ -1,6 +1,7 @@
 import processMaterialRequest from "./processMaterialRequest.mjs";
 import handleSendMsg from "../../message/handleSendMsg.mjs";
-import getRequestMaterial from "./getRequestMaterial.mjs";
+import getRequestMaterialInfo from "./getRequestMaterialInfo.mjs";
+import getMaterialFromDrive from "./getMaterialFromDrive.mjs";
 
 const { sendMediaMsg, sendTextMsg } = handleSendMsg;
 
@@ -21,15 +22,27 @@ export default async function deliverDocumentToGroup(
     return;
   }
 
-  const material = getRequestMaterial(
+  const materialInfo = await getRequestMaterialInfo(
     group_jid,
     actionKeyword,
     materialIdentifier
   );
+  if (!materialInfo || materialInfo.length === 0) {
+    await sendTextMsg(
+      group_jid,
+      "❗ No study material found for the provided course code or title.",
+      [participant_jid]
+    );
+    return;
+  }
 
-  await sendMediaMsg(sender, {
+  const { buffer, file_name, mimeType } = await getMaterialFromDrive(
+    materialInfo
+  );
+
+  await sendMediaMsg(group_jid, {
     document: buffer,
-    fileName: match.original_file_name || "file.pdf",
-    mimetype: "application/pdf",
+    fileName: file_name,
+    mimetype: mimeType,
   });
 }
