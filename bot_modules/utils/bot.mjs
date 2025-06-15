@@ -46,4 +46,17 @@ export default async function startBot() {
       console.error("Error in handleRecieveMsg:", err);
     }
   });
+
+  // Event listener for group updates (when group is deleted or participants are removed)
+  sock.ev.on("groups.update", async (updates) => {
+    for (const update of updates) {
+      if (
+        update.id &&
+        update.participants &&
+        update.participants.length === 0
+      ) {
+        await markGroupInactive(update.id);
+      }
+    }
+  });
 }
