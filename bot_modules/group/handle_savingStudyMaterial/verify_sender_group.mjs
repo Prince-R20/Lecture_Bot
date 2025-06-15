@@ -1,9 +1,12 @@
 import supabase from "../../client/supabase.mjs";
+import handleSendMsg from "../../message/handleSendMsg.mjs";
+
+const { sendTextMsg } = handleSendMsg;
 
 export default async function verify_sender_group(sender) {
   const botGroupAdmin = await verifySenderIsAdmin(sender);
   if (botGroupAdmin == false) {
-    await sendTextMsg(sender, "You are not authorized to send me any media.");
+    await sendTextMsg(sender, "You are not authorized to send me any message.");
     return;
   }
 
@@ -30,7 +33,7 @@ async function verifySenderIsAdmin(senderJid) {
     } else if (!data) {
       await sendTextMsg(
         senderJid,
-        "You are not authorize to send me any media."
+        "You are not authorize to send me any message."
       );
       return false;
     } else {
@@ -42,7 +45,7 @@ async function verifySenderIsAdmin(senderJid) {
   }
 }
 
-async function verifyGroupActive(group_jid) {
+export async function verifyGroupActive(group_jid) {
   try {
     const { data, error } = await supabase
       .from("groups")
@@ -52,6 +55,7 @@ async function verifyGroupActive(group_jid) {
 
     if (error) {
       console.error("Error fetching data:", error);
+      return false;
     } else if (!data) {
       return false;
     } else {
