@@ -14,6 +14,16 @@ export default async function reqJoinGroup(inviteCode, sender) {
     inviteCode
   );
 
+  const adminData = await isSenderAnAdmin(sender);
+
+  if (adminData) {
+    await sendTextMsg(
+      sender,
+      "❗ You are already an admin of another group. You cannot be admin of more than one group."
+    );
+    return;
+  }
+
   // checking if bot already in group
   const inGroup = await isBotinGroup(sock, id);
 
@@ -86,6 +96,22 @@ async function isBotinGroup(sock, group_jid) {
       error
     );
 
+    return false;
+  }
+}
+
+// check if sender is already an admin in any group function
+async function isSenderAnAdmin(sender) {
+  try {
+    const { data, error } = await supabase
+      .from("admins")
+      .select("*")
+      .eq("admin_jid", sender)
+      .maybeSingle();
+
+    return data;
+  } catch (error) {
+    console.error("Error checking if sender is an admin:", error);
     return false;
   }
 }

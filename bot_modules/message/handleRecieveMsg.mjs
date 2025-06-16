@@ -2,6 +2,8 @@ import reqJoinGroup from "../group/handleNewGroup/handleJoinReq.mjs";
 import handleSendMsg from "./handleSendMsg.mjs";
 import uploadDocumentToDrive from "../group/handle_savingStudyMaterial/DocumentUploadToDrive.mjs";
 import deliverDocumentToGroup from "../group/handle_deliveringStudyMaterial/deliverDocumentToGroup.mjs";
+import addAssistantAdmin from "../group/handleAdmin/addAssistAdmin.mjs";
+import makeAssistAdmin from "../group/handleAdmin/makeAssistAdmin.mjs";
 const { sendTextMsg, sendMediaMsg } = handleSendMsg;
 
 export default async function handleRecieveMsg(msg) {
@@ -48,12 +50,22 @@ export default async function handleRecieveMsg(msg) {
     sender.endsWith("@s.whatsapp.net") &&
     media
   ) {
-    uploadDocumentToDrive(media, message, sender);
+    await uploadDocumentToDrive(media, message, sender);
   }
 
   //if message is from a group (possibly a request from a participant)
   if (sender.endsWith("@g.us") && !media) {
     const participant = message.key.participant;
-    deliverDocumentToGroup(sender, participant, text);
+    await deliverDocumentToGroup(sender, participant, text);
+  }
+
+  // If a current group admin want to add an assistant admin
+  if (
+    sender.endsWith("@s.whatsapp.net") &&
+    text.toLowerCase().trim() === "add assistant to group"
+  ) {
+    await addAssistantAdmin(sender);
+  } else if (sender.endsWith("@s.whatsapp.net") && text.startsWith("ASSIST:")) {
+    await makeAssistAdmin(text, sender);
   }
 }
