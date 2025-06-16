@@ -8,6 +8,7 @@ import syncAuth from "../connection/handleSyncAuthRemote.mjs";
 import handleRecieveMsg from "../message/handleRecieveMsg.mjs";
 import markGroupInactive from "../group/group_updates/handleGroup!active.mjs";
 import { setSock } from "./sockInstance.mjs";
+import { isGroupInviteAllowed } from "../group/handleNewGroup/allowedNewGroups.mjs";
 
 export default async function startBot() {
   await syncAuth.downloadAuth();
@@ -61,9 +62,8 @@ export default async function startBot() {
     }
   });
 
-  // If the bot is removed from the group
+  //If the bot is removed from a group, mark it as inactive
   sock.ev.on("group-participants.update", async (update) => {
-    console.log();
     if (
       update.id &&
       update.participants &&
@@ -71,6 +71,19 @@ export default async function startBot() {
       update.action === "remove"
     ) {
       await markGroupInactive(update.id);
+    }
+  });
+
+  // Handle groups.upsert event to check if the bot was added via invite
+  sock.ev.on("groups.upsert", async (groups) => {
+    for (const group of groups) {
+      // Check if this group is allowed (invite flow)
+      if (!isGroupInviteAllowed(group.id)) {
+        await sock.groupLeave(group.id);
+        console.log(
+          `Left group ${group.id} because bot was not added via invite (groups.upsert).`
+        );
+      }
     }
   });
 }
