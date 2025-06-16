@@ -6,6 +6,7 @@ import {
 import handleConnection from "../connection/handleConnection.mjs";
 import syncAuth from "../connection/handleSyncAuthRemote.mjs";
 import handleRecieveMsg from "../message/handleRecieveMsg.mjs";
+import markGroupInactive from "../group/group_updates/handleGroup!active.mjs";
 import { setSock } from "./sockInstance.mjs";
 
 export default async function startBot() {
@@ -57,6 +58,19 @@ export default async function startBot() {
       ) {
         await markGroupInactive(update.id);
       }
+    }
+  });
+
+  // If the bot is removed from the group
+  sock.ev.on("group-participants.update", async (update) => {
+    console.log();
+    if (
+      update.id &&
+      update.participants &&
+      update.participants.includes(`${sock.user.lid}`.split(":")[0] + "@lid") &&
+      update.action === "remove"
+    ) {
+      await markGroupInactive(update.id);
     }
   });
 }
