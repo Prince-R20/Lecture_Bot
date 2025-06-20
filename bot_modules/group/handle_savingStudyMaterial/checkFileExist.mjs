@@ -6,14 +6,14 @@ export default async function checkFileExists(file_hash) {
       .from("study_materials")
       .select("file_hash")
       .eq("file_hash", file_hash)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error("Error checking file existence:", error);
       return false;
     }
 
-    return data ? true : false;
+    return !!data; // Returns true if file exists, false otherwise
   } catch (error) {
     console.error("Error checking file existence:", error);
     throw error;

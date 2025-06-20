@@ -7,7 +7,7 @@ import getFileInfo from "./processFileMetaData.mjs";
 import verify_sender_group from "./verify_sender_group.mjs";
 import checkFileExists from "./checkFileExist.mjs";
 
-const { sendTextMsg } = handleSendMsg;
+const { sendTextMsg, sendMediaMsg } = handleSendMsg;
 
 const tempUpload = new Map();
 
@@ -109,10 +109,12 @@ export default async function uploadDocumentToDrive(media, message, sender) {
         );
 
         // Notify the group about the new material
-        await sendTextMsg(
-          botGroupAdmin.group_jid, // The group's JID
-          groupMaterialAnnouncement(driveRes)
-        );
+        await sendMediaMsg(botGroupAdmin.group_jid, {
+          document: buffer,
+          fileName: metaData.fileName,
+          mimetype: metaData.mimetype,
+          caption: groupMaterialAnnouncement(driveRes),
+        });
       } else {
         await sendTextMsg(
           sender,
@@ -146,6 +148,13 @@ function groupMaterialAnnouncement(file) {
 🆔 *Course Code:* ${file.properties?.course_code || "N/A"}\n
 📝 *Title:* ${file.properties?.course_title || "N/A"}\n
 🧾 *Description:* ${file.description || "No description provided."}\n
+${
+  file.properties?.part !== "-"
+    ? `〽 *Part:* ${file.properties?.part || "No description provided."}\n`
+    : ""
+}
+🧾 *Semester:* ${file.properties?.semester || "-"}\n
+🧾 *Level:* ${file.properties?.level || "-"}\n
 🔗 *Ask the bot for this material by course code or title!*\n\n
 
 ✨ _Thanks to our admin for supporting your learning journey!_\n

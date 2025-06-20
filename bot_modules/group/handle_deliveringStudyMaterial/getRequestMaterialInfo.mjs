@@ -20,12 +20,12 @@ export default async function getRequestMaterialInfo(
         "course_title",
         `%${materialIdentifier.course_title}%`
       );
+    if (materialIdentifier.part)
+      query = query.ilike("part", `%${materialIdentifier.part}%`);
     if (materialIdentifier.level)
       query = query.ilike("level", `%${materialIdentifier.level}%`);
     if (materialIdentifier.semester)
       query = query.ilike("semester", `%${materialIdentifier.semester}%`);
-    if (materialIdentifier.part)
-      query = query.ilike("part", `%${materialIdentifier.part}%`);
 
     // Get the most relevant file (first match)
     const { data, error } = await query;

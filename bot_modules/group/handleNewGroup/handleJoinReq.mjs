@@ -3,6 +3,7 @@ import { getSock } from "../../utils/sockInstance.mjs";
 import joinGroup from "./handleJoinGroup.mjs";
 import { waitForAdminReply } from "../../utils/handleWaitForReply.mjs";
 import supabase from "../../client/supabase.mjs";
+import { allowGroupInvite } from "./allowedNewGroups.mjs";
 const { sendTextMsg } = handleSendMsg;
 
 export default async function reqJoinGroup(inviteCode, sender) {
@@ -64,6 +65,7 @@ export default async function reqJoinGroup(inviteCode, sender) {
     }
 
     if (decision.toLowerCase() === "yes") {
+      allowGroupInvite(id);
       await joinGroup(inviteCode, sender);
     } else {
       await sendTextMsg(

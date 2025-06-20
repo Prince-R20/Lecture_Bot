@@ -11,7 +11,7 @@ export default async function deliverDocumentToGroup(
   message
 ) {
   const { commandTrigger, actionKeyword, materialIdentifier } =
-    processMaterialRequest(message);
+    processMaterialRequest(message, group_jid);
 
   if (commandTrigger == false) return;
 
